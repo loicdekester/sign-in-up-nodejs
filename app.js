@@ -3,6 +3,8 @@ const express = require('express'),
   helmet = require('helmet'),
   morgan = require('morgan'),
   path = require('path');
+const sql = require('./sql');
+const db = require('./config/database-connection');
 
 /** ROUTES IMPORTS*/
 const indexRouter = require('./routes/index');
@@ -67,6 +69,12 @@ app.use(function (err, req, res, next) {
 /** Start server */
 const server = app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port ' + server.address().port);
+  db.none(sql.users.create).catch((err) => {
+    //duplicate table
+    if (err.code !== '42P07') {
+      console.log(err);
+    }
+  });
 });
 
 module.exports = app;
