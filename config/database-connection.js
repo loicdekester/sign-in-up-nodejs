@@ -1,4 +1,6 @@
 const pgp = require('pg-promise')();
+const dotenv = require('dotenv');
+dotenv.config();
 
 let cn = {};
 if (process.env.NODE_ENV === 'production') {
@@ -13,9 +15,9 @@ if (process.env.NODE_ENV === 'production') {
   cn = {
     host: 'localhost',
     port: 5432,
-    database: 'authdatabase',
-    user: '********',
-    password: '********',
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
   };
 }
 
