@@ -5,6 +5,8 @@ const express = require('express'),
   path = require('path');
 const sql = require('./sql');
 const db = require('./config/database-connection');
+const passport = require('passport');
+require('./config/passport');
 
 /** ROUTES IMPORTS*/
 const indexRouter = require('./routes/index');

@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const secret = require('../config/auth-secret').secret;
 
 class User {
   _id = null;
@@ -61,6 +63,29 @@ class User {
     this._email = dbUser.email;
     this._password = dbUser.password;
   }
+
+  generateJWT = function () {
+    const today = new Date();
+    const exp = new Date(today);
+    exp.setDate(today.getDate() + 60);
+    console.log(exp);
+    console.log(parseInt(exp.getTime() / 1000));
+    return jwt.sign({
+      id: this._id,
+      email: this._email,
+      exp: parseInt(exp.getTime() / 1000),
+    }, secret);
+  };
+
+  toAuthJSON() {
+    return {
+      id: this._id,
+      firstName: this._firstName,
+      lastName: this._lastName,
+      email: this._email,
+      token: this.generateJWT(),
+    };
+  };
 
 }
 
