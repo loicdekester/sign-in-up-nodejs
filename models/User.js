@@ -68,8 +68,6 @@ class User {
     const today = new Date();
     const exp = new Date(today);
     exp.setDate(today.getDate() + 60);
-    console.log(exp);
-    console.log(parseInt(exp.getTime() / 1000));
     return jwt.sign({
       id: this._id,
       email: this._email,
