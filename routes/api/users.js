@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const sql = require('../../sql');
-const db = require('../../config/database-connection');
+const { db } = require('../../repository/index');
 const passport = require('passport');
 const { auth, getIdFromToken } = require('../../service/authService');
 const User = require('../../models/User');
+const asyncHandler = require('../../service/asyncHandler');
 
 router.post('/users', async function (req, res, next) {
   try {
@@ -13,11 +13,9 @@ router.post('/users', async function (req, res, next) {
     user.email = req.body.user.email;
     await user.setEncryptedPassword(req.body.user.password);
     return db.tx('add-user', async t => {
-      let oldUser = await db.oneOrNone(sql.users.findByEmail, { email: user.email });
+      let oldUser = await t.users.findByEmail(user.email);
       if (!oldUser) {
-        const valuesArray = Object.values(user);
-        valuesArray.shift();
-        await db.none(sql.users.add, valuesArray);
+        await t.users.add(user);
         res.status(201).send("User created successfully");
       } else {
         res.status(403).send("User already exists");
@@ -39,20 +37,32 @@ router.post('/users/login', function (req, res, next) {
   })(req, res, next);
 });
 
-router.get('/user', auth.required, async function (req, res, next) {
-  try {
-    const id = getIdFromToken(req);
-    const dbUser = await db.oneOrNone(sql.users.findById, { id });
-    if (dbUser) {
-      const user = new User();
-      user.setUserFromDB(dbUser);
-      return res.json({ user: user.toAuthJSON() });
-    } else {
-      return res.status(404).send("User not found");
-    }
-  } catch (error) {
-    res.status(500).send(new Error(error));
+router.get('/user', auth.required, asyncHandler(async function (req, res, next) {
+  const dbUser = await db.users.findById(getIdFromToken(req));
+  if (dbUser) {
+    const user = new User();
+    user.setUserFromDB(dbUser);
+    return res.json({ user: user.toAuthJSON() });
+  } else {
+    return res.status(404).send("User not found");
   }
-});
+}));
+
+router.put('/user', auth.required, asyncHandler(async function (req, res, next) {
+  return db.tx('update-user', async t => {
+    const payload = req.body.user;
+    payload.id = getIdFromToken(req);
+    const updatedUser = new User();
+    const dbUser = await t.users.update(payload);
+    updatedUser.setUserFromDB(dbUser);
+    res.status(200).json({ user: updatedUser.toAuthJSON() });
+  });
+}));
+
+router.delete('/user', auth.required, asyncHandler(async function (req, res, next) {
+  const result = await db.users.delete(getIdFromToken(req));
+  console.log(result);
+  res.status(200).send('User deleted successfully');
+}));
 
 module.exports = router;

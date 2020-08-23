@@ -4,7 +4,7 @@ const express = require('express'),
   morgan = require('morgan'),
   path = require('path');
 const sql = require('./sql');
-const db = require('./config/database-connection');
+const { db } = require('./repository/index');
 const passport = require('passport');
 require('./config/passport');
 
@@ -71,7 +71,7 @@ app.use(function (err, req, res, next) {
 /** Start server */
 const server = app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port ' + server.address().port);
-  db.none(sql.users.create).catch((err) => {
+  db.users.create().catch((err) => {
     //duplicate table
     if (err.code !== '42P07') {
       console.log(err);
