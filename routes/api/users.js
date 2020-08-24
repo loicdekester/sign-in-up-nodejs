@@ -5,7 +5,7 @@ const { auth, getIdFromToken } = require('../../service/authService');
 const User = require('../../models/User');
 const asyncHandler = require('../../service/asyncHandler');
 
-router.post('/users', async function (req, res, next) {
+router.post('/users', asyncHandler(async function (req, res, next) {
   try {
     const user = new User();
     user.firstName = req.body.user.firstName;
@@ -24,7 +24,7 @@ router.post('/users', async function (req, res, next) {
   } catch (error) {
     res.status(500).send(new Error(error));
   }
-});
+}));
 
 router.post('/users/login', function (req, res, next) {
   passport.authenticate('local', { session: false }, function (err, user, info) {
@@ -37,18 +37,19 @@ router.post('/users/login', function (req, res, next) {
   })(req, res, next);
 });
 
-router.get('/user', auth.required, asyncHandler(async function (req, res, next) {
+router.get('/users', auth.required, asyncHandler(async function (req, res, next) {
   const dbUser = await db.users.findById(getIdFromToken(req));
   if (dbUser) {
     const user = new User();
     user.setUserFromDB(dbUser);
     return res.json({ user: user.toAuthJSON() });
   } else {
-    return res.status(404).send("User not found");
+    const error = new Error("User not found");
+    return res.status(404).json({ error });
   }
 }));
 
-router.put('/user', auth.required, asyncHandler(async function (req, res, next) {
+router.put('/users', auth.required, asyncHandler(async function (req, res, next) {
   return db.tx('update-user', async t => {
     const payload = req.body.user;
     payload.id = getIdFromToken(req);
@@ -59,7 +60,7 @@ router.put('/user', auth.required, asyncHandler(async function (req, res, next) 
   });
 }));
 
-router.delete('/user', auth.required, asyncHandler(async function (req, res, next) {
+router.delete('/users', auth.required, asyncHandler(async function (req, res, next) {
   const result = await db.users.delete(getIdFromToken(req));
   console.log(result);
   res.status(200).send('User deleted successfully');

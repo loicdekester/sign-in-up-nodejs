@@ -1,8 +1,7 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 FacebookStrategy = require('passport-facebook').Strategy;
-const sql = require('../sql');
-const db = require('../repository/index');
+const { db } = require('../repository/index');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
@@ -16,7 +15,7 @@ passport.use(new LocalStrategy(
 
 async function authenticateUser(email, password, done) {
   try {
-    const dbUser = await db.oneOrNone(sql.users.findByEmail, { email });
+    const dbUser = await db.users.findByEmail(email);
     if (dbUser) {
       const user = new User();
       user.setUserFromDB(dbUser);
