@@ -2,19 +2,13 @@ const jwt = require('express-jwt');
 const jsonWebToken = require('jsonwebtoken');
 const secret = require('../config/auth-secret').secret;
 
-function getTokenFromHeader(req) {
-  let token = null
-  if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token' ||
-    req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-    token = req.headers.authorization.split(' ')[1];
-  }
-  return token;
+function getTokenFromCookie(req) {
+  return req.cookies.token;
 }
 
 function getIdFromToken(req) {
-  const token = getTokenFromHeader(req)
+  const token = getTokenFromCookie(req)
   return jsonWebToken.decode(token).id;
-
 }
 
 const auth = {
@@ -22,14 +16,14 @@ const auth = {
     secret: secret,
     algorithms: ['HS256'],
     userProperty: 'payload',
-    getToken: getTokenFromHeader
+    getToken: getTokenFromCookie
   }),
   optional: jwt({
     secret: secret,
     algorithms: ['HS256'],
     userProperty: 'payload',
     credentialsRequired: false,
-    getToken: getTokenFromHeader
+    getToken: getTokenFromCookie
   })
 };
 

@@ -23,7 +23,7 @@ class UsersRepository {
 
   // Inserts a new user in the database;
   async add(user) {
-    return this.db.none(this.pgp.helpers.insert(user, cs.insert));
+    return this.db.one(`${this.pgp.helpers.insert(user, cs.insert)} RETURNING *`);
   }
 
   // Updates a user in the database;

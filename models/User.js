@@ -65,13 +65,9 @@ class User {
   }
 
   generateJWT = function () {
-    const today = new Date();
-    const exp = new Date(today);
-    exp.setDate(today.getDate() + 60);
     return jwt.sign({
       id: this._id,
       email: this._email,
-      exp: parseInt(exp.getTime() / 1000),
     }, secret);
   };
 
@@ -81,7 +77,6 @@ class User {
       firstName: this._firstName,
       lastName: this._lastName,
       email: this._email,
-      token: this.generateJWT(),
     };
   };
 
