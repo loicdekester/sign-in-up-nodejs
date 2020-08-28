@@ -30,7 +30,7 @@ router.post('/users/login', function (req, res, next) {
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) { return next(err); }
     if (user) {
-      res.cookie('token', user.generateJWT());
+      res.cookie('token', user.generateJWT(), { httpOnly: true });
       return res.json({ user: user.toAuthJSON() });
     } else {
       return res.status(401).json(info);
@@ -38,20 +38,7 @@ router.post('/users/login', function (req, res, next) {
   })(req, res, next);
 });
 
-router.get('/auth/google',
-  passport.authenticate('google', {
-    scope: ["profile", "email"]
-  })
-);
-
-router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: 'http://localhost:8080/login', session: false }), function (req, res, next) {
-    res.cookie('token', req.user.generateJWT());
-    return res.redirect('http://localhost:8080/');
-  }
-);
-
-router.get('/users', asyncHandler(async function (req, res, next) {
+router.get('/users', auth.required, asyncHandler(async function (req, res, next) {
   const dbUser = await db.users.findById(getIdFromToken(req));
   if (dbUser) {
     const user = new User();
