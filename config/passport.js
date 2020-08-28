@@ -63,15 +63,16 @@ async function findOrCreate(profile) {
   const verifiedEmail = profile.emails.find(email => email.verified);
   const oldUser = await db.users.findByEmail(verifiedEmail.value);
   if (!oldUser) {
-    const user = new User;
+    let user = new User;
     user.firstName = profile.name.givenName;
     user.lastName = profile.name.familyName;
     user.email = verifiedEmail.value;
-    const newUser = await db.users.add(user);
-    return newUser
+    const dbUser = await db.users.add(user);
+    user.setUserFromDB(dbUser);
+    return user;
   } else {
     const user = new User;
     user.setUserFromDB(oldUser);
-    return user
+    return user;
   }
 }
