@@ -25,4 +25,15 @@ router.get('/logout', auth.required, asyncHandler(async function (req, res, next
   res.send('Logging out');
 }));
 
+router.get('/facebook',
+  passport.authenticate('facebook', { scope: ['email', 'user_birthday', 'user_gender'] })
+);
+
+router.get('/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: 'http://localhost:8080/#/login', session: false }), function (req, res, next) {
+    res.cookie('token', req.user.generateJWT());
+    return res.redirect('http://localhost:8080/#/profile');
+  }
+);
+
 module.exports = router;

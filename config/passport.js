@@ -35,18 +35,22 @@ async function authenticateUser(email, password, done) {
   }
 };
 
-/*passport.use(new FacebookStrategy({
+passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_APP_ID,
   clientSecret: process.env.FACEBOOK_APP_SECRET,
-  callbackURL: "http://localhost:3000/api/auth/facebook/callback"
+  callbackURL: "http://localhost:3000/api/auth/facebook/callback",
+  profileFields: ['name', 'email'],
 },
-  function (accessToken, refreshToken, profile, done) {
-    User.findOrCreate(..., function (err, user) {
-      if (err) { return done(err); }
+  async function (accessToken, refreshToken, profile, done) {
+    console.log(profile);
+    if (profile.emails) {
+      const user = await findOrCreate(profile, profile.emails[0]);
       done(null, user);
-    });
-  }
-));*/
+    } else {
+      done(null, false, 'email is not verified')
+    }
+  })
+);
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -54,13 +58,17 @@ passport.use(new GoogleStrategy({
   callbackURL: "http://localhost:3000/api/auth/google/callback"
 },
   async function (token, tokenSecret, profile, done) {
-    const user = await findOrCreate(profile);
-    done(null, user);
+    if (profile.emails) {
+      const user = await findOrCreate(profile);
+      done(null, user);
+    } else {
+      done(null, false, 'email is not verified')
+    }
   })
 );
 
-async function findOrCreate(profile) {
-  const verifiedEmail = profile.emails.find(email => email.verified);
+async function findOrCreate(profile, email) {
+  const verifiedEmail = email || profile.emails.find(email => email.verified);
   const oldUser = await db.users.findByEmail(verifiedEmail.value);
   if (!oldUser) {
     let user = new User;
