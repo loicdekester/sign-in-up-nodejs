@@ -42,7 +42,7 @@ passport.use(new FacebookStrategy({
   profileFields: ['name', 'email'],
 },
   async function (accessToken, refreshToken, profile, done) {
-    console.log(profile);
+    //console.log(profile);
     if (profile.emails) {
       const user = await findOrCreate(profile, profile.emails[0]);
       done(null, user);
