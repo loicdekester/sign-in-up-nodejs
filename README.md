@@ -1,6 +1,8 @@
 # sign-in-up-nodejs
 Example to demonstrate how to use [Express](http://expressjs.com/) 4.x, the [Passport](http://www.passportjs.org/) library, to manage different authentication strategies, and the [pg-promise](https://github.com/vitaly-t/pg-promise) library to save users to a PostgreSQL database.
+
 This repository is the server side of the application, you can find the front end side in this [repository](https://github.com/loicdekester/sign-in-up-vue). It is a single page application using Vue.js framework.
+
 You can use this example as a starting point for your own web applications.
 
 ## Instructions
