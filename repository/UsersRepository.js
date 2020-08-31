@@ -6,43 +6,42 @@ class UsersRepository {
   constructor(db, pgp) {
     this.db = db;
     this.pgp = pgp;
-
-    // set-up all ColumnSet objects, if needed:
+    // set-up all ColumnSet objects:
     createColumnsets(pgp);
   }
 
-  // Creates the table;
+  // Creates the table
   async create() {
     return this.db.none(sql.create);
   }
 
-  // Drops the table;
+  // Drops the table
   async drop() {
     return this.db.none(sql.drop);
   }
 
-  // Inserts a new user in the database;
+  // Inserts a new user in the database
   async add(user) {
     return this.db.one(`${this.pgp.helpers.insert(user, cs.insert)} RETURNING *`);
   }
 
-  // Updates a user in the database;
+  // Updates a user in the database
   async update(user) {
     const query = `${this.pgp.helpers.update(user, cs.update)} WHERE id = ${user.id} RETURNING *`
     return this.db.one(query);
   }
 
-  // Tries to delete a user by id;
+  // Tries to delete a user by id
   async delete(id) {
     return this.db.result(sql.delete, { id });
   }
 
-  // Tries to find a user from id;
+  // Tries to find a user from id
   async findById(id) {
     return this.db.oneOrNone(sql.findById, { id });
   }
 
-  // Tries to find a user from email;
+  // Tries to find a user from email
   async findByEmail(email) {
     return this.db.oneOrNone(sql.findByEmail, { email });
   }

@@ -26,7 +26,7 @@ router.get('/logout', auth.required, asyncHandler(async function (req, res, next
 }));
 
 router.get('/facebook',
-  passport.authenticate('facebook', { scope: ['email', 'user_birthday', 'user_gender'] })
+  passport.authenticate('facebook', { scope: ['email'] })
 );
 
 router.get('/facebook/callback',

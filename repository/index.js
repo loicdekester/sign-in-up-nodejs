@@ -3,6 +3,7 @@ const dotenv = require('dotenv').config();
 const UsersRepository = require('./UsersRepository');
 
 let dbConfig = {};
+// Production config
 if (process.env.NODE_ENV === 'production') {
   dbConfig = {
     host: '',
@@ -11,6 +12,7 @@ if (process.env.NODE_ENV === 'production') {
     user: '',
     password: '',
   };
+  // Development config
 } else {
   dbConfig = {
     host: 'localhost',
