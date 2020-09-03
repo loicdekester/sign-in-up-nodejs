@@ -7,7 +7,7 @@ const secret = require('../config/auth-secret').secret;
  * @param {Object} req Http request
  */
 function getTokenFromCookie(req) {
-  return req.cookies.token;
+  return req.cookies ? req.cookies.token : undefined;
 }
 
 /**
