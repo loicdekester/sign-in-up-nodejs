@@ -70,10 +70,10 @@ class UsersRepository {
 function createColumnsets(pgp) {
   if (!cs.insert) {
     cs.insert = new pgp.helpers.ColumnSet([
-      { name: 'first_name', prop: 'firstName', skip(col) { return str(col) } },
-      { name: 'last_name', prop: 'lastName', skip(col) { return str(col) } },
-      { name: 'email', skip(col) { return str(col) } },
-      { name: 'password', skip(col) { return str(col) } }
+      { name: 'first_name', prop: 'firstName', skip: col => !col.exists },
+      { name: 'last_name', prop: 'lastName', skip: col => !col.exists },
+      { name: 'email', skip: col => !col.exists },
+      { name: 'password', skip: col => !col.exists }
     ], {
       table: 'users'
     });

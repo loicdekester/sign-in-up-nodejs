@@ -63,7 +63,6 @@ router.put('/users', auth.required, asyncHandler(async function (req, res, next)
 
 router.delete('/users', auth.required, asyncHandler(async function (req, res, next) {
   const result = await db.users.delete(getIdFromToken(req));
-  console.log(result);
   res.status(200).send('User deleted successfully');
 }));
 

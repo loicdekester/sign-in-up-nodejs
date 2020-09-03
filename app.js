@@ -4,7 +4,6 @@ const express = require('express'),
   morgan = require('morgan'),
   path = require('path'),
   cookieParser = require('cookie-parser');
-const sql = require('./sql');
 const { db } = require('./repository/index');
 const passport = require('passport');
 require('./config/passport');
