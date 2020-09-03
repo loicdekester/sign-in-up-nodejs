@@ -12,8 +12,15 @@ if (process.env.NODE_ENV === 'production') {
     user: '',
     password: '',
   };
-  // Development config
-} else {
+} else if (process.env.NODE_ENV === 'test') { // Test config
+  dbConfig = {
+    host: 'localhost',
+    port: 5432,
+    database: 'authtest',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+  };
+} else { // Development config
   dbConfig = {
     host: 'localhost',
     port: 5432,
